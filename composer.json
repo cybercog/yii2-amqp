@@ -4,6 +4,7 @@
     "keywords": ["yii", "extension", "amqp", "RabbitMQ"],
     "homepage": "https://github.com/iviu96afa/yii2-amqp",
     "type": "yii-extension",
+    "license": "GPL-3.0+",
     "authors": [
         {
             "name": "Mustafa Magdi",
