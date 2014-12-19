@@ -43,7 +43,7 @@ class Amqp extends Component {
      * @return void
      */
     public function publish($exchange, $routing_key, $message) {
-        $connection = new AMQPConnection(AMPQ_HOST, AMPQ_PORT, AMPQ_USER, AMPQ_PASS);
+        $connection = new AMQPConnection($this->host, $this->port, $this->user, $this->password);
         $channel = $connection->channel();
         $message = new AMQPMessage($message);
 
