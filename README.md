@@ -38,38 +38,49 @@ to the ```components``` section of your `config.php` file.
 1- Sending:
 
 ```
-$exchange = 'example';
-$queue_name = 'queue_name';
-$message = serialize($data);
+	$exchange = 'exchange';
+	$queue = 'queue';
+	$dataArray = array('x', 'y', 'z');
+	$message = serialize($dataArray);
 
-Yii::$app->amqp->publish($exchange, $queue_name, $message);
+	Yii::$app->amqp->declareExchange($exchange, $type = 'direct', $passive = false, $durable = true, $auto_delete = false);
+	Yii::$app->amqp->declareQueue($queue, $passive = false, $durable = true, $exclusive = false, $auto_delete = false);
+	Yii::$app->amqp->bindQueueExchanger($queue, $exchange, $routingKey = $queue);
+	Yii::$app->amqp->publish_message($message, $exchange, $routingKey = $queue, $content_type = 'applications/json', $app_id = Yii::$app->name);
 ```
 
 2- Receiving:
 
 ```
-use iviu96afa\amqp\PhpAmqpLib\Connection\AMQPConnection;
+	set_time_limit(0);
+	error_reporting(E_ALL);
 
-$exchange = 'example';
-$queue_name = 'queue_name';
+	use iviu96afa\anqp\PhpAmqpLib\Connection\AMQPConnection;
 
-$connection = new AMQPConnection('localhost', 5672, 'username', 'password');
-$channel = $connection->channel();
+	$exchange = 'exchange';
+	$queue = 'queue';
+	$consumer_tag = 'consumer_1';
 
-$channel->queue_declare($queue_name, false, false, false, false);
+	$conn = new AMQPConnection('localhost', 5672, 'username', 'password', '/');
+	$ch = $conn->channel();
+	$ch->exchange_declare($exchange, 'direct', false, true, false);
+	$ch->queue_bind($queue, $exchange);
 
-echo ' [*] Waiting for messages. To exit press CTRL+C', "\n";
+	function process_message($msg) {
+		$body = unserialize($msg->body);
+	}
 
-$callback = function($msg) {
-  echo " [x] Received ", $msg->body, "\n";
-};
+	$ch->basic_consume($queue, $consumer_tag, false, false, false, false, 'process_message');
 
-$channel->basic_consume($queue_name, '', false, true, false, false, $callback);
+	function shutdown($ch, $conn) {
+		$ch->close();
+		$conn->close();
+	}
 
-while(count($channel->callbacks)) {
-    $channel->wait();
-}
+	register_shutdown_function('shutdown', $ch, $conn);
 
-$channel->close();
-$connection->close();
+	// Loop as long as the channel has callbacks registered
+	while (count($ch->callbacks)) {
+		$ch->wait();
+	}
 ```
