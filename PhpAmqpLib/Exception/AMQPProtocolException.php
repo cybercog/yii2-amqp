@@ -3,8 +3,8 @@
 namespace iviu96afa\amqp\PhpAmqpLib\Exception;
 
 //TODO refactor usage of static methods
-use PhpAmqpLib\Channel\AbstractChannel;
-use PhpAmqpLib\Helper\MiscHelper;
+use iviu96afa\amqp\PhpAmqpLib\Channel\AbstractChannel;
+use iviu96afa\amqp\PhpAmqpLib\Helper\MiscHelper;
 
 class AMQPProtocolException extends \Exception implements AMQPExceptionInterface
 {
