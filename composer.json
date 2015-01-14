@@ -7,8 +7,8 @@
     "license": "GPL-3.0+",
     "authors": [
         {
-            "name": "Mustafa Magdi",
-            "email": "developer.mustafa@gmail.com"
+            "name": "Alexey Kuznetsov",
+            "email": "mirakuru@webtoucher.ru"
         }
     ],
     "require": {
